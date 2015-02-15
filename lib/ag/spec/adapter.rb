@@ -54,8 +54,8 @@ module Ag
 
         consumers = adapter.consumers(producer)
         assert_equal 2, consumers.size
-        assert_equal "2", consumers[0].consumer_id
-        assert_equal "1", consumers[1].consumer_id
+        assert_equal "2", consumers[0].consumer.id
+        assert_equal "1", consumers[1].consumer.id
       end
 
       def test_consumers_limit
@@ -93,8 +93,8 @@ module Ag
 
         producers = adapter.producers(consumer1)
         assert_equal 2, producers.size
-        assert_equal "4", producers[0].producer_id
-        assert_equal "3", producers[1].producer_id
+        assert_equal "4", producers[0].producer.id
+        assert_equal "3", producers[1].producer.id
       end
 
       def test_producers_limit
