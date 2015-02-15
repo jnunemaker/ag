@@ -27,4 +27,5 @@ pp producers: client.producers(john)
 # produce an event for steve
 pp produce: client.produce(event)
 
+# get the timeline of events for john based on the producers john follows
 pp timeline: client.timeline(john)
