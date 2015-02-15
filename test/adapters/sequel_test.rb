@@ -14,6 +14,7 @@ class AdaptersSequelTest < Ag::Test
       String :producer_id
       String :producer_type
       Time :created_at
+      index [:consumer_id, :consumer_type, :producer_id, :producer_type], unique: true
     end
 
     @db.create_table :events do

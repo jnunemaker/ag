@@ -15,6 +15,26 @@ module Ag
         assert_in_delta Time.now.utc, connection.created_at, 1
       end
 
+      def test_produce
+        producer = Ag::Object.new("User", "1")
+        object = Ag::Object.new("User", "2")
+        event = Ag::Event.new({
+          producer: producer,
+          object: object,
+          verb: "follow",
+        })
+
+        result = adapter.produce(event)
+
+        event = events.first
+        assert_equal event.id, result.id
+        assert_equal producer.id, event.producer_id
+        assert_equal producer.type, event.producer_type
+        assert_equal object.id, event.event_object_id
+        assert_equal object.type, event.event_object_type
+        assert_in_delta Time.now.utc, event.created_at, 1
+      end
+
       def test_connected
         consumer = Ag::Object.new("User", "1")
         producer = Ag::Object.new("User", "2")
@@ -38,6 +58,29 @@ module Ag
         assert_equal "1", consumers[1].consumer_id
       end
 
+      def test_consumers_limit
+        producer = Ag::Object.new("User", "99")
+        consumers = (1..10).to_a.map { |n|
+          Ag::Object.new("User", n.to_s).tap { |consumer|
+            connect consumer, producer
+          }
+        }
+        assert_equal 5, adapter.consumers(producer, limit: 5).size
+        assert_equal consumers[5..9].reverse,
+          adapter.consumers(producer, limit: 5).map(&:consumer)
+      end
+
+      def test_consumers_offset
+        producer = Ag::Object.new("User", "99")
+        consumers = (1..10).to_a.map { |n|
+          Ag::Object.new("User", n.to_s).tap { |consumer|
+            connect consumer, producer
+          }
+        }
+        assert_equal consumers[0..4].reverse,
+          adapter.consumers(producer, offset: 5).map(&:consumer)
+      end
+
       def test_producers
         consumer1 = Ag::Object.new("User", "1")
         consumer2 = Ag::Object.new("User", "2")
@@ -54,24 +97,27 @@ module Ag
         assert_equal "3", producers[1].producer_id
       end
 
-      def test_produce
-        producer = Ag::Object.new("User", "1")
-        object = Ag::Object.new("User", "2")
-        event = Ag::Event.new({
-          producer: producer,
-          object: object,
-          verb: "follow",
-        })
+      def test_producers_limit
+        consumer = Ag::Object.new("User", "99")
+        producers = (1..10).to_a.map { |n|
+          Ag::Object.new("User", n.to_s).tap { |producer|
+            connect consumer, producer
+          }
+        }
+        assert_equal 5, adapter.producers(consumer, limit: 5).size
+        assert_equal producers[5..9].reverse,
+          adapter.producers(consumer, limit: 5).map(&:producer)
+      end
 
-        result = adapter.produce(event)
-
-        event = events.first
-        assert_equal event.id, result.id
-        assert_equal producer.id, event.producer_id
-        assert_equal producer.type, event.producer_type
-        assert_equal object.id, event.event_object_id
-        assert_equal object.type, event.event_object_type
-        assert_in_delta Time.now.utc, event.created_at, 1
+      def test_producers_offset
+        consumer = Ag::Object.new("User", "99")
+        producers = (1..10).to_a.map { |n|
+          Ag::Object.new("User", n.to_s).tap { |producer|
+            connect consumer, producer
+          }
+        }
+        assert_equal producers[0..4].reverse,
+          adapter.producers(consumer, offset: 5).map(&:producer)
       end
 
       def test_timeline

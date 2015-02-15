@@ -39,13 +39,13 @@ module Ag
       def consumers(producer, options = {})
         @source[:connections].select { |connection|
           connection.producer == producer
-        }.reverse
+        }.reverse[options.fetch(:offset, 0), options.fetch(:limit, 30)]
       end
 
       def producers(consumer, options = {})
         @source[:connections].select { |connection|
           connection.consumer == consumer
-        }.reverse
+        }.reverse[options.fetch(:offset, 0), options.fetch(:limit, 30)]
       end
 
       def timeline(consumer, options = {})

@@ -55,31 +55,41 @@ module Ag
       end
 
       def consumers(producer, options = {})
-        @db[:connections].select(:consumer_id, :consumer_type).where({
-          producer_id: producer.id,
-          producer_type: producer.type,
-        }).order(::Sequel.desc(:id)).map { |row|
-          Connection.new({
-            id: row[:id],
-            created_at: row[:created_at],
-            consumer: Object.new(row[:consumer_type], row[:consumer_id]),
-            producer: Object.new(row[:producer_type], row[:producer_id]),
-          })
-        }
+        @db[:connections].
+          where({
+            producer_id: producer.id,
+            producer_type: producer.type,
+          }).
+          limit(options.fetch(:limit, 30)).
+          offset(options.fetch(:offset, 0)).
+          order(::Sequel.desc(:id)).
+          map { |row|
+            Connection.new({
+              id: row[:id],
+              created_at: row[:created_at],
+              consumer: Object.new(row[:consumer_type], row[:consumer_id]),
+              producer: Object.new(row[:producer_type], row[:producer_id]),
+            })
+          }
       end
 
       def producers(consumer, options = {})
-        @db[:connections].where({
-          consumer_id: consumer.id,
-          consumer_type: consumer.type,
-        }).order(::Sequel.desc(:id)).map { |row|
-          Connection.new({
-            id: row[:id],
-            created_at: row[:created_at],
-            consumer: Object.new(row[:consumer_type], row[:consumer_id]),
-            producer: Object.new(row[:producer_type], row[:producer_id]),
-          })
-        }
+        @db[:connections].
+          where({
+            consumer_id: consumer.id,
+            consumer_type: consumer.type,
+          }).
+          limit(options.fetch(:limit, 30)).
+          offset(options.fetch(:offset, 0)).
+          order(::Sequel.desc(:id)).
+          map { |row|
+            Connection.new({
+              id: row[:id],
+              created_at: row[:created_at],
+              consumer: Object.new(row[:consumer_type], row[:consumer_id]),
+              producer: Object.new(row[:producer_type], row[:producer_id]),
+            })
+          }
       end
 
       def timeline(consumer, options = {})
