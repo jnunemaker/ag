@@ -50,6 +50,7 @@ module Ag
 
       def timeline(consumer, options = {})
         producers = producers(consumer).map(&:producer)
+
         Array(@source[:events]).select { |event|
           producers.include?(event.producer)
         }.sort_by { |event|

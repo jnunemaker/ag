@@ -97,12 +97,14 @@ module Ag
           LIMIT :limit
           OFFSET :offset
         SQL
+
         binds = {
           consumer_id: consumer.id,
           consumer_type: consumer.type,
           limit: options.fetch(:limit, 30),
           offset: options.fetch(:offset, 0),
         }
+
         @db[statement, binds].to_a.map { |row|
           Ag::Event.new({
             id: row[:id],
