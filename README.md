@@ -7,7 +7,7 @@ Experiments in describing feeds/timelines of events in code based on adapters so
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'ag'
+gem "ag"
 ```
 
 And then execute:
@@ -21,6 +21,8 @@ Or install it yourself as:
 ## Usage
 
 ```ruby
+require "ag"
+
 adapter = Ag::Adapters::Memory.new
 client = Ag::Client.new(adapter)
 john = Ag::Object.new("User", "1")
@@ -46,6 +48,9 @@ pp producers: client.producers(john)
 
 # produce an event for steve
 pp produce: client.produce(event)
+
+# get the timeline of events for john based on the producers john follows
+pp timeline: client.timeline(john)
 ```
 
 ## Contributing
