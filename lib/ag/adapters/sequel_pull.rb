@@ -2,6 +2,8 @@ require "sequel"
 
 module Ag
   module Adapters
+    # Adapter that uses the minimum amount of writes while still allowing full
+    # historic assembly of timelines. This comes at the cost of slower reads.
     class SequelPull
       def initialize(db)
         @db = db
@@ -99,9 +101,12 @@ module Ag
           FROM
             events e
           INNER JOIN
-            connections c ON e.producer_id = c.producer_id AND e.producer_type = c.producer_type
+            connections c ON
+              e.producer_id = c.producer_id AND
+              e.producer_type = c.producer_type
           WHERE
-            c.consumer_id = :consumer_id AND c.consumer_type = :consumer_type
+            c.consumer_id = :consumer_id AND
+            c.consumer_type = :consumer_type
           ORDER BY
             e.created_at DESC
           LIMIT :limit
