@@ -2,8 +2,8 @@ module Ag
   module Spec
     module Adapter
       def test_connect
-        consumer = Ag::Consumer.new("User", "1")
-        producer = Ag::Producer.new("User", "2")
+        consumer = Ag::Object.new("User", "1")
+        producer = Ag::Object.new("User", "2")
 
         adapter.connect(consumer, producer)
 
@@ -16,8 +16,8 @@ module Ag
       end
 
       def test_connected
-        consumer = Ag::Consumer.new("User", "1")
-        producer = Ag::Producer.new("User", "2")
+        consumer = Ag::Object.new("User", "1")
+        producer = Ag::Object.new("User", "2")
         connect(consumer, producer)
 
         assert_equal true, adapter.connected?(consumer, producer)
@@ -25,10 +25,10 @@ module Ag
       end
 
       def test_consumers
-        consumer1 = Ag::Consumer.new("User", "1")
-        consumer2 = Ag::Consumer.new("User", "2")
-        consumer3 = Ag::Consumer.new("User", "3")
-        producer = Ag::Producer.new("User", "4")
+        consumer1 = Ag::Object.new("User", "1")
+        consumer2 = Ag::Object.new("User", "2")
+        consumer3 = Ag::Object.new("User", "3")
+        producer = Ag::Object.new("User", "4")
         connect(consumer1, producer)
         connect(consumer2, producer)
 
@@ -36,11 +36,11 @@ module Ag
       end
 
       def test_producers
-        consumer1 = Ag::Consumer.new("User", "1")
-        consumer2 = Ag::Consumer.new("User", "2")
-        producer1 = Ag::Producer.new("User", "3")
-        producer2 = Ag::Producer.new("User", "4")
-        producer3 = Ag::Producer.new("User", "5")
+        consumer1 = Ag::Object.new("User", "1")
+        consumer2 = Ag::Object.new("User", "2")
+        producer1 = Ag::Object.new("User", "3")
+        producer2 = Ag::Object.new("User", "4")
+        producer3 = Ag::Object.new("User", "5")
         connect(consumer1, producer1)
         connect(consumer1, producer2)
         connect(consumer2, producer3)
@@ -49,7 +49,7 @@ module Ag
       end
 
       def test_produce
-        producer = Ag::Producer.new("User", "1")
+        producer = Ag::Object.new("User", "1")
         object = Ag::Object.new("User", "2")
         event = Ag::Event.new({
           producer: producer,

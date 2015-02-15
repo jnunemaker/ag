@@ -23,8 +23,8 @@ Or install it yourself as:
 ```ruby
 adapter = Ag::Adapters::Memory.new
 client = Ag::Client.new(adapter)
-john = Ag::Consumer.new("User", "1")
-steve = Ag::Producer.new("User", "2")
+john = Ag::Object.new("User", "1")
+steve = Ag::Object.new("User", "2")
 presentation = Ag::Object.new("Presentation", "1")
 event = Ag::Event.new({
   producer: steve,

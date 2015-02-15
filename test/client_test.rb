@@ -82,14 +82,14 @@ class ClientTest < Ag::Test
   end
 
   def consumer
-    @consumer ||= Ag::Consumer.new("User", "1")
+    @consumer ||= Ag::Object.new("User", "1")
   end
 
   def producer
-    @producer ||= Ag::Producer.new("User", "1")
+    @producer ||= Ag::Object.new("User", "1")
   end
 
   def object
-    @object ||= Ag::Object.new("User", "2")
+    @object ||= Ag::Object.new("User", "3")
   end
 end

@@ -31,7 +31,7 @@ module Ag
           producer_id: producer.id,
           producer_type: producer.type,
         }).order(::Sequel.desc(:id)).map { |row|
-          Consumer.new(row[:consumer_type], row[:consumer_id])
+          Object.new(row[:consumer_type], row[:consumer_id])
         }
       end
 
@@ -40,7 +40,7 @@ module Ag
           consumer_id: consumer.id,
           consumer_type: consumer.type,
         }).order(::Sequel.desc(:id)).map { |row|
-          Producer.new(row[:producer_type], row[:producer_id])
+          Object.new(row[:producer_type], row[:producer_id])
         }
       end
 
