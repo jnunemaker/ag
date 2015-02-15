@@ -26,3 +26,5 @@ pp producers: client.producers(john)
 
 # produce an event for steve
 pp produce: client.produce(event)
+
+pp timeline: client.timeline(john)

@@ -23,5 +23,9 @@ module Ag
     def produce(event)
       @adapter.produce(event)
     end
+
+    def timeline(consumer)
+      @adapter.timeline(consumer)
+    end
   end
 end

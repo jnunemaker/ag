@@ -67,6 +67,18 @@ class ClientTest < Ag::Test
     mock_adapter.verify
   end
 
+  def test_forwards_timeline_to_adapter
+    args = [consumer]
+    result = [event]
+    mock_adapter = Minitest::Mock.new
+    mock_adapter.expect(:timeline, result, args)
+
+    client = Ag::Client.new(mock_adapter)
+    assert_equal result, client.timeline(*args)
+
+    mock_adapter.verify
+  end
+
   private
 
   def event
