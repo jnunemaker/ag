@@ -19,6 +19,10 @@ class AdaptersMemoryTest < Ag::Test
     @source[:connections]
   end
 
+  def events
+    @source[:events]
+  end
+
   def connect(consumer, producer)
     @source[:connections] ||= []
     @source[:connections] << Ag::Connection.new({
@@ -29,7 +33,8 @@ class AdaptersMemoryTest < Ag::Test
     })
   end
 
-  def events
-    @source[:events]
+  def produce(event)
+    @source[:events] ||= []
+    @source[:events] << event
   end
 end

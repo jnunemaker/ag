@@ -46,15 +46,6 @@ class AdaptersSequelTest < Ag::Test
     }
   end
 
-  def connect(consumer, producer)
-    @db[:connections].insert({
-      consumer_id: consumer.id,
-      consumer_type: consumer.type,
-      producer_id: producer.id,
-      producer_type: producer.type,
-    })
-  end
-
   def events
     @db[:events].map { |row|
       Ag::Event.new({
@@ -65,5 +56,24 @@ class AdaptersSequelTest < Ag::Test
         object: Ag::Object.new(row[:object_type], row[:object_id]),
       })
     }
+  end
+
+  def connect(consumer, producer)
+    @db[:connections].insert({
+      consumer_id: consumer.id,
+      consumer_type: consumer.type,
+      producer_id: producer.id,
+      producer_type: producer.type,
+    })
+  end
+
+  def produce(event)
+    @db[:events].insert({
+      producer_type: event.producer.type,
+      producer_id: event.producer.id,
+      object_type: event.object.type,
+      object_id: event.object.id,
+      created_at: Time.now.utc,
+    })
   end
 end

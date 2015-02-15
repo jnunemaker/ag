@@ -72,6 +72,17 @@ module Ag
         assert_equal object.type, event.object_type
         assert_in_delta Time.now.utc, event.created_at, 1
       end
+
+      def test_timeline
+        john = Ag::Object.new("User", "1")
+        steve = Ag::Object.new("User", "2")
+        presentation = Ag::Object.new("Presentation", "1")
+        connect john, steve
+        produce Ag::Event.new(producer: steve, object: presentation, verb: "publish")
+
+        events = adapter.timeline(john)
+        assert_equal 1, events.size
+      end
     end
   end
 end

@@ -38,6 +38,13 @@ module Ag
         @source[:events] ||= []
         @source[:events] << event
       end
+
+      def timeline(consumer)
+        producers = producers(consumer).map(&:producer)
+        Array(@source[:events]).select { |event|
+          producers.include?(event.producer)
+        }
+      end
     end
   end
 end

@@ -71,6 +71,24 @@ module Ag
           created_at: Time.now.utc,
         })
       end
+
+      def timeline(consumer)
+        statement = <<-SQL
+          SELECT
+            e.*
+          FROM
+            events e
+          INNER JOIN
+            connections c ON e.producer_id = c.producer_id AND e.producer_type = c.producer_type
+          WHERE
+            c.consumer_id = :consumer_id AND c.consumer_type = :consumer_type
+        SQL
+        binds = {
+          consumer_id: consumer.id,
+          consumer_type: consumer.type,
+        }
+        @db[statement, binds].to_a
+      end
     end
   end
 end
