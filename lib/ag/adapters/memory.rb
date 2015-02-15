@@ -52,7 +52,9 @@ module Ag
         producers = producers(consumer).map(&:producer)
         Array(@source[:events]).select { |event|
           producers.include?(event.producer)
-        }
+        }.sort_by { |event|
+          -event.created_at.to_f
+        }[0, options.fetch(:limit, 30)]
       end
     end
   end

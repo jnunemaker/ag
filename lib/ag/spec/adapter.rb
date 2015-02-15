@@ -84,6 +84,28 @@ module Ag
         events = adapter.timeline(john)
         assert_equal 1, events.size
       end
+
+      def test_timeline_limit
+        john = Ag::Object.new("User", "1")
+        steve = Ag::Object.new("User", "2")
+        connect john, steve
+
+        presentations = (1..10).to_a.map { |n|
+          Ag::Object.new("Presentation", n.to_s)
+        }
+
+        presentations.each do |presentation|
+          produce Ag::Event.new({
+            producer: steve,
+            object: presentation,
+            verb: "publish",
+          })
+        end
+
+        events = adapter.timeline(john, limit: 5)
+        assert_equal 5, events.size
+        assert_equal presentations[5..10].reverse, events.map(&:object)
+      end
     end
   end
 end

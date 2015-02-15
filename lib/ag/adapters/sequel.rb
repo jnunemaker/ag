@@ -92,12 +92,24 @@ module Ag
             connections c ON e.producer_id = c.producer_id AND e.producer_type = c.producer_type
           WHERE
             c.consumer_id = :consumer_id AND c.consumer_type = :consumer_type
+          ORDER BY
+            e.created_at DESC
+          LIMIT :limit
         SQL
         binds = {
           consumer_id: consumer.id,
           consumer_type: consumer.type,
+          limit: options.fetch(:limit, 30)
         }
-        @db[statement, binds].to_a
+        @db[statement, binds].to_a.map { |row|
+          Ag::Event.new({
+            id: row[:id],
+            created_at: row[:created_at],
+            producer: Ag::Object.new(row[:producer_type], row[:producer_id]),
+            object: Ag::Object.new(row[:object_type], row[:object_id]),
+            verb: row[:verb],
+          })
+        }
       end
     end
   end
