@@ -7,4 +7,62 @@ class ClientTest < Ag::Test
     client = Ag::Client.new(adapter)
     assert_instance_of Ag::Client, client
   end
+
+  def test_forwards_connect_to_adapter
+    args = [consumer, producer]
+    result = true
+    mock_adapter = Minitest::Mock.new
+    mock_adapter.expect(:connect, result, args)
+
+    client = Ag::Client.new(mock_adapter)
+    assert_equal result, client.connect(*args)
+
+    mock_adapter.verify
+  end
+
+  def test_forwards_connected_to_adapter
+    args = [consumer, producer]
+    result = true
+    mock_adapter = Minitest::Mock.new
+    mock_adapter.expect(:connected?, result, args)
+
+    client = Ag::Client.new(mock_adapter)
+    assert_equal result, client.connected?(*args)
+
+    mock_adapter.verify
+  end
+
+  def test_forwards_consumers_to_adapter
+    args = [producer]
+    result = [consumer]
+    mock_adapter = Minitest::Mock.new
+    mock_adapter.expect(:consumers, result, args)
+
+    client = Ag::Client.new(mock_adapter)
+    assert_equal result, client.consumers(*args)
+
+    mock_adapter.verify
+  end
+
+  def test_forwards_producers_to_adapter
+    args = [consumer]
+    result = [producer]
+    mock_adapter = Minitest::Mock.new
+    mock_adapter.expect(:producers, result, args)
+
+    client = Ag::Client.new(mock_adapter)
+    assert_equal result, client.producers(*args)
+
+    mock_adapter.verify
+  end
+
+  private
+
+  def consumer
+    @consumer ||= Ag::Consumer.new("User", "1")
+  end
+
+  def producer
+    @producer ||= Ag::Producer.new("User", "1")
+  end
 end
