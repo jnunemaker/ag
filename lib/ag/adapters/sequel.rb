@@ -43,6 +43,18 @@ module Ag
           Producer.new(row[:producer_type], row[:producer_id])
         }
       end
+
+      def produce(event)
+        @db[:events].insert({
+          producer_type: event.producer.type,
+          producer_id: event.producer.id,
+          object_type: event.object.type,
+          object_id: event.object.id,
+          actor_type: event.actor.type,
+          actor_id: event.actor.id,
+          created_at: Time.now.utc,
+        })
+      end
     end
   end
 end

@@ -56,7 +56,32 @@ class ClientTest < Ag::Test
     mock_adapter.verify
   end
 
+  def test_forwards_producers_to_adapter
+    args = [event]
+    result = [producer]
+    mock_adapter = Minitest::Mock.new
+    mock_adapter.expect(:producers, result, args)
+
+    client = Ag::Client.new(mock_adapter)
+    assert_equal result, client.producers(*args)
+
+    mock_adapter.verify
+  end
+
   private
+
+  def event
+    @event ||= Ag::Event.new({
+      producer: producer,
+      object: object,
+      actor: actor,
+      verb: verb,
+    })
+  end
+
+  def verb
+    "follow"
+  end
 
   def consumer
     @consumer ||= Ag::Consumer.new("User", "1")
@@ -64,5 +89,13 @@ class ClientTest < Ag::Test
 
   def producer
     @producer ||= Ag::Producer.new("User", "1")
+  end
+
+  def object
+    @object ||= Ag::Object.new("User", "2")
+  end
+
+  def actor
+    @actor ||= Ag::Actor.new("User", "1")
   end
 end

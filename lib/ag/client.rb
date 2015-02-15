@@ -19,5 +19,9 @@ module Ag
     def producers(consumer)
       @adapter.producers(consumer)
     end
+
+    def produce(event)
+      @adapter.produce(event)
+    end
   end
 end

@@ -32,4 +32,8 @@ class AdaptersMemoryTest < Ag::Test
     @source[:connections] ||= []
     @source[:connections] << [consumer, producer, Time.now.utc]
   end
+
+  def events
+    @source[:events].map(&:to_hash)
+  end
 end

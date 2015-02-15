@@ -6,12 +6,25 @@ class AdaptersSequelTest < Ag::Test
   def setup
     Sequel.default_timezone = :utc
     @db = Sequel.sqlite
+
     @db.create_table :connections do
       primary_key :id
       String :consumer_id
       String :consumer_type
       String :producer_id
       String :producer_type
+      Time :created_at
+    end
+
+    @db.create_table :events do
+      primary_key :id
+      String :producer_id
+      String :producer_type
+      String :object_id
+      String :object_type
+      String :actor_id
+      String :actor_type
+      String :verb
       Time :created_at
     end
   end
@@ -35,5 +48,9 @@ class AdaptersSequelTest < Ag::Test
       producer_id: producer.id,
       producer_type: producer.type,
     })
+  end
+
+  def events
+    @db[:events]
   end
 end

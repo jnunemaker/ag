@@ -47,6 +47,29 @@ module Ag
 
         assert_equal [producer2, producer1], adapter.producers(consumer1)
       end
+
+      def test_produce
+        producer = Ag::Producer.new("User", "1")
+        object = Ag::Object.new("User", "1")
+        actor = Ag::Actor.new("User", "1")
+        event = Ag::Event.new({
+          producer: producer,
+          object: object,
+          actor: actor,
+          verb: "follow",
+        })
+
+        adapter.produce(event)
+
+        record = events.first
+        assert_equal producer.id, record[:producer_id]
+        assert_equal producer.type, record[:producer_type]
+        assert_equal object.id, record[:object_id]
+        assert_equal object.type, record[:object_type]
+        assert_equal actor.id, record[:actor_id]
+        assert_equal actor.type, record[:actor_type]
+        assert_in_delta Time.now.utc, record[:created_at], 1
+      end
     end
   end
 end

@@ -33,6 +33,11 @@ module Ag
           connection_producer
         }.reverse
       end
+
+      def produce(event)
+        @source[:events] ||= []
+        @source[:events] << event
+      end
     end
   end
 end
