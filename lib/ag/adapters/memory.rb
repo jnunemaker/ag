@@ -7,30 +7,30 @@ module Ag
 
       def connect(consumer, producer)
         @source[:connections] ||= []
-        @source[:connections] << [consumer, producer, Time.now.utc]
+        @source[:connections] << Connection.new({
+          id: SecureRandom.uuid,
+          created_at: Time.now.utc,
+          consumer: consumer,
+          producer: producer,
+        })
       end
 
       def connected?(consumer, producer)
-        consumers(producer).include?(consumer)
+        !@source[:connections].detect { |connection|
+          connection.consumer == consumer &&
+            connection.producer == producer
+        }.nil?
       end
 
       def consumers(producer)
         @source[:connections].select { |connection|
-          connection_consumer, connection_producer, _ = connection
-          producer == connection_producer
-        }.map { |connection|
-          connection_consumer, _ = connection
-          connection_consumer
+          connection.producer == producer
         }.reverse
       end
 
       def producers(consumer)
         @source[:connections].select { |connection|
-          connection_consumer, connection_producer, _ = connection
-          consumer == connection_consumer
-        }.map { |connection|
-          _, connection_producer = connection
-          connection_producer
+          connection.consumer == consumer
         }.reverse
       end
 

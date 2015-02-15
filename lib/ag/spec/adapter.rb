@@ -32,7 +32,10 @@ module Ag
         connect(consumer1, producer)
         connect(consumer2, producer)
 
-        assert_equal [consumer2, consumer1], adapter.consumers(producer)
+        consumers = adapter.consumers(producer)
+        assert_equal 2, consumers.size
+        assert_equal "2", consumers[0].consumer_id
+        assert_equal "1", consumers[1].consumer_id
       end
 
       def test_producers
@@ -45,7 +48,10 @@ module Ag
         connect(consumer1, producer2)
         connect(consumer2, producer3)
 
-        assert_equal [producer2, producer1], adapter.producers(consumer1)
+        producers = adapter.producers(consumer1)
+        assert_equal 2, producers.size
+        assert_equal "4", producers[0].producer_id
+        assert_equal "3", producers[1].producer_id
       end
 
       def test_produce

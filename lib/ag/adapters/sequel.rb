@@ -8,12 +8,20 @@ module Ag
       end
 
       def connect(consumer, producer)
-        @db[:connections].insert({
+        created_at = Time.now.utc
+        id = @db[:connections].insert({
           consumer_id: consumer.id,
           consumer_type: consumer.type,
           producer_id: producer.id,
           producer_type: producer.type,
-          created_at: Time.now.utc,
+          created_at: created_at,
+        })
+
+        Connection.new({
+          id: id,
+          created_at: created_at,
+          consumer: consumer,
+          producer: producer,
         })
       end
 
@@ -31,16 +39,26 @@ module Ag
           producer_id: producer.id,
           producer_type: producer.type,
         }).order(::Sequel.desc(:id)).map { |row|
-          Object.new(row[:consumer_type], row[:consumer_id])
+          Connection.new({
+            id: row[:id],
+            created_at: row[:created_at],
+            consumer: Object.new(row[:consumer_type], row[:consumer_id]),
+            producer: Object.new(row[:producer_type], row[:producer_id]),
+          })
         }
       end
 
       def producers(consumer)
-        @db[:connections].select(:producer_id, :producer_type).where({
+        @db[:connections].where({
           consumer_id: consumer.id,
           consumer_type: consumer.type,
         }).order(::Sequel.desc(:id)).map { |row|
-          Object.new(row[:producer_type], row[:producer_id])
+          Connection.new({
+            id: row[:id],
+            created_at: row[:created_at],
+            consumer: Object.new(row[:consumer_type], row[:consumer_id]),
+            producer: Object.new(row[:producer_type], row[:producer_id]),
+          })
         }
       end
 
