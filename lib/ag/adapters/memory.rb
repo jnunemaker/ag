@@ -36,19 +36,19 @@ module Ag
         }.nil?
       end
 
-      def consumers(producer)
+      def consumers(producer, options = {})
         @source[:connections].select { |connection|
           connection.producer == producer
         }.reverse
       end
 
-      def producers(consumer)
+      def producers(consumer, options = {})
         @source[:connections].select { |connection|
           connection.consumer == consumer
         }.reverse
       end
 
-      def timeline(consumer)
+      def timeline(consumer, options = {})
         producers = producers(consumer).map(&:producer)
         Array(@source[:events]).select { |event|
           producers.include?(event.producer)

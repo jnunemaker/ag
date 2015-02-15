@@ -54,7 +54,7 @@ module Ag
         }).first.nil?
       end
 
-      def consumers(producer)
+      def consumers(producer, options = {})
         @db[:connections].select(:consumer_id, :consumer_type).where({
           producer_id: producer.id,
           producer_type: producer.type,
@@ -68,7 +68,7 @@ module Ag
         }
       end
 
-      def producers(consumer)
+      def producers(consumer, options = {})
         @db[:connections].where({
           consumer_id: consumer.id,
           consumer_type: consumer.type,
@@ -82,7 +82,7 @@ module Ag
         }
       end
 
-      def timeline(consumer)
+      def timeline(consumer, options = {})
         statement = <<-SQL
           SELECT
             e.*

@@ -19,6 +19,18 @@ class ClientTest < Ag::Test
     mock_adapter.verify
   end
 
+  def test_forwards_produce_to_adapter
+    args = [event]
+    result = [producer]
+    mock_adapter = Minitest::Mock.new
+    mock_adapter.expect(:produce, result, args)
+
+    client = Ag::Client.new(mock_adapter)
+    assert_equal result, client.produce(*args)
+
+    mock_adapter.verify
+  end
+
   def test_forwards_connected_to_adapter
     args = [consumer, producer]
     result = true
@@ -32,7 +44,7 @@ class ClientTest < Ag::Test
   end
 
   def test_forwards_consumers_to_adapter
-    args = [producer]
+    args = [producer, {}]
     result = [consumer]
     mock_adapter = Minitest::Mock.new
     mock_adapter.expect(:consumers, result, args)
@@ -44,19 +56,7 @@ class ClientTest < Ag::Test
   end
 
   def test_forwards_producers_to_adapter
-    args = [consumer]
-    result = [producer]
-    mock_adapter = Minitest::Mock.new
-    mock_adapter.expect(:producers, result, args)
-
-    client = Ag::Client.new(mock_adapter)
-    assert_equal result, client.producers(*args)
-
-    mock_adapter.verify
-  end
-
-  def test_forwards_producers_to_adapter
-    args = [event]
+    args = [consumer, {}]
     result = [producer]
     mock_adapter = Minitest::Mock.new
     mock_adapter.expect(:producers, result, args)
@@ -68,7 +68,7 @@ class ClientTest < Ag::Test
   end
 
   def test_forwards_timeline_to_adapter
-    args = [consumer]
+    args = [consumer, {}]
     result = [event]
     mock_adapter = Minitest::Mock.new
     mock_adapter.expect(:timeline, result, args)

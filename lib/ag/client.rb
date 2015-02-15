@@ -8,24 +8,24 @@ module Ag
       @adapter.connect(consumer, producer)
     end
 
-    def connected?(consumer, producer)
-      @adapter.connected?(consumer, producer)
-    end
-
-    def consumers(producer)
-      @adapter.consumers(producer)
-    end
-
-    def producers(consumer)
-      @adapter.producers(consumer)
-    end
-
     def produce(event)
       @adapter.produce(event)
     end
 
-    def timeline(consumer)
-      @adapter.timeline(consumer)
+    def connected?(consumer, producer)
+      @adapter.connected?(consumer, producer)
+    end
+
+    def consumers(producer, options = {})
+      @adapter.consumers(producer, options)
+    end
+
+    def producers(consumer, options = {})
+      @adapter.producers(consumer, options)
+    end
+
+    def timeline(consumer, options = {})
+      @adapter.timeline(consumer, options)
     end
   end
 end
