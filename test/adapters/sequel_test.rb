@@ -36,7 +36,14 @@ class AdaptersSequelTest < Ag::Test
   private
 
   def connections
-    @db[:connections]
+    @db[:connections].map { |row|
+      Ag::Connection.new({
+        id: row[:id],
+        created_at: row[:created_at],
+        consumer: Ag::Object.new(row[:consumer_type], row[:consumer_id]),
+        producer: Ag::Object.new(row[:producer_type], row[:producer_id]),
+      })
+    }
   end
 
   def connect(consumer, producer)
@@ -49,6 +56,14 @@ class AdaptersSequelTest < Ag::Test
   end
 
   def events
-    @db[:events]
+    @db[:events].map { |row|
+      Ag::Event.new({
+        id: row[:id],
+        verb: row[:verb],
+        created_at: row[:created_at],
+        producer: Ag::Object.new(row[:producer_type], row[:producer_id]),
+        object: Ag::Object.new(row[:object_type], row[:object_id]),
+      })
+    }
   end
 end

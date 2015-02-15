@@ -21,23 +21,5 @@ module Ag
       @consumer = attributes[:consumer]
       @created_at = attributes[:created_at]
     end
-
-    def to_hash
-      hash = {
-        created_at: @created_at,
-      }
-
-      if @producer
-        hash[:producer_type] = @producer.type
-        hash[:producer_id] = @producer.id
-      end
-
-      if @consumer
-        hash[:consumer_type] = @consumer.type
-        hash[:consumer_id] = @consumer.id
-      end
-
-      hash
-    end
   end
 end

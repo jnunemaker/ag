@@ -7,12 +7,12 @@ module Ag
 
         adapter.connect(consumer, producer)
 
-        record = connections.first
-        assert_equal consumer.id, record[:consumer_id]
-        assert_equal consumer.type, record[:consumer_type]
-        assert_equal producer.id, record[:producer_id]
-        assert_equal producer.type, record[:producer_type]
-        assert_in_delta Time.now.utc, record[:created_at], 1
+        connection = connections.first
+        assert_equal consumer.id, connection.consumer_id
+        assert_equal consumer.type, connection.consumer_type
+        assert_equal producer.id, connection.producer_id
+        assert_equal producer.type, connection.producer_type
+        assert_in_delta Time.now.utc, connection.created_at, 1
       end
 
       def test_connected
@@ -65,12 +65,12 @@ module Ag
 
         adapter.produce(event)
 
-        record = events.first
-        assert_equal producer.id, record[:producer_id]
-        assert_equal producer.type, record[:producer_type]
-        assert_equal object.id, record[:object_id]
-        assert_equal object.type, record[:object_type]
-        assert_in_delta Time.now.utc, record[:created_at], 1
+        event = events.first
+        assert_equal producer.id, event.producer_id
+        assert_equal producer.type, event.producer_type
+        assert_equal object.id, event.object_id
+        assert_equal object.type, event.object_type
+        assert_in_delta Time.now.utc, event.created_at, 1
       end
     end
   end

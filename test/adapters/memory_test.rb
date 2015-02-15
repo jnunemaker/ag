@@ -16,13 +16,13 @@ class AdaptersMemoryTest < Ag::Test
   private
 
   def connections
-    @source[:connections].map(&:to_hash)
+    @source[:connections]
   end
 
   def connect(consumer, producer)
     @source[:connections] ||= []
     @source[:connections] << Ag::Connection.new({
-      id: SecureRandom.hex(20),
+      id: SecureRandom.uuid,
       created_at: Time.now.utc,
       consumer: consumer,
       producer: producer,
@@ -30,6 +30,6 @@ class AdaptersMemoryTest < Ag::Test
   end
 
   def events
-    @source[:events].map(&:to_hash)
+    @source[:events]
   end
 end

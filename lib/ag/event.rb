@@ -1,26 +1,25 @@
+require "forwardable"
+
 module Ag
   class Event
+    extend Forwardable
+
     attr_reader :producer
     attr_reader :object
     attr_reader :verb
     attr_reader :created_at
 
+    def_delegator :@producer, :id, :producer_id
+    def_delegator :@producer, :type, :producer_type
+
+    def_delegator :@object, :id, :object_id
+    def_delegator :@object, :type, :object_type
+
     def initialize(attrs = {})
       @producer = attrs.fetch(:producer)
-      @verb = attrs.fetch(:verb)
       @object = attrs.fetch(:object)
+      @verb = attrs.fetch(:verb)
       @created_at = attrs.fetch(:created_at) { Time.now.utc }
-    end
-
-    def to_hash
-      {
-        producer_type: @producer.type,
-        producer_id: @producer.id,
-        object_type: @object.type,
-        object_id: @object.id,
-        verb: @verb,
-        created_at: @created_at,
-      }
     end
   end
 end
