@@ -2,7 +2,7 @@ require "sequel"
 
 module Ag
   module Adapters
-    class Sequel
+    class SequelPull
       def initialize(db)
         @db = db
       end
@@ -62,7 +62,7 @@ module Ag
           }).
           limit(options.fetch(:limit, 30)).
           offset(options.fetch(:offset, 0)).
-          order(::Sequel.desc(:id)).
+          order(Sequel.desc(:id)).
           map { |row|
             Connection.new({
               id: row[:id],
@@ -81,7 +81,7 @@ module Ag
           }).
           limit(options.fetch(:limit, 30)).
           offset(options.fetch(:offset, 0)).
-          order(::Sequel.desc(:id)).
+          order(Sequel.desc(:id)).
           map { |row|
             Connection.new({
               id: row[:id],

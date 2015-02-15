@@ -1,8 +1,8 @@
 require_relative "../helper"
-require "ag/adapters/sequel"
+require "ag/adapters/sequel_pull"
 require "ag/spec/adapter"
 
-class AdaptersSequelTest < Ag::Test
+class AdaptersSequelPullTest < Ag::Test
   def setup
     Sequel.default_timezone = :utc
     @db = Sequel.sqlite
@@ -29,7 +29,7 @@ class AdaptersSequelTest < Ag::Test
   end
 
   def adapter
-    @adapter ||= Ag::Adapters::Sequel.new(@db)
+    @adapter ||= Ag::Adapters::SequelPull.new(@db)
   end
 
   include Ag::Spec::Adapter
