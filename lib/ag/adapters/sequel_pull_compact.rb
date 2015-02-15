@@ -52,46 +52,83 @@ module Ag
       end
 
       def connected?(consumer, producer)
-        !@db[:connections].select(:id).where({
+        statement = <<-SQL
+          SELECT
+            1
+          FROM
+            connections
+          WHERE
+            consumer_id = :consumer_id AND
+            producer_id = :producer_id
+          LIMIT 1
+        SQL
+
+        binds = {
           consumer_id: self.class.dehydrate(consumer),
           producer_id: self.class.dehydrate(producer),
-        }).first.nil?
+        }
+
+        !@db[statement, binds].first.nil?
       end
 
       def consumers(producer, options = {})
-        @db[:connections].
-          where({
-            producer_id: self.class.dehydrate(producer),
-          }).
-          limit(options.fetch(:limit, 30)).
-          offset(options.fetch(:offset, 0)).
-          order(Sequel.desc(:id)).
-          map { |row|
-            Connection.new({
-              id: row[:id],
-              created_at: row[:created_at],
-              consumer: self.class.hydrate(row[:consumer_id]),
-              producer: self.class.hydrate(row[:producer_id]),
-            })
-          }
+        statement = <<-SQL
+          SELECT
+            id, created_at, consumer_id, producer_id
+          FROM
+            connections
+          WHERE
+            producer_id = :producer_id
+          ORDER BY
+            id DESC
+          LIMIT :limit
+          OFFSET :offset
+        SQL
+
+        binds = {
+          producer_id: self.class.dehydrate(producer),
+          limit: options.fetch(:limit, 30),
+          offset: options.fetch(:offset, 0),
+        }
+
+        @db[statement, binds].to_a.map { |row|
+          Connection.new({
+            id: row[:id],
+            created_at: row[:created_at],
+            consumer: self.class.hydrate(row[:consumer_id]),
+            producer: self.class.hydrate(row[:producer_id]),
+          })
+        }
       end
 
       def producers(consumer, options = {})
-        @db[:connections].
-          where({
-            consumer_id: self.class.dehydrate(consumer),
-          }).
-          limit(options.fetch(:limit, 30)).
-          offset(options.fetch(:offset, 0)).
-          order(Sequel.desc(:id)).
-          map { |row|
-            Connection.new({
-              id: row[:id],
-              created_at: row[:created_at],
-              consumer: self.class.hydrate(row[:consumer_id]),
-              producer: self.class.hydrate(row[:producer_id]),
-            })
-          }
+        statement = <<-SQL
+          SELECT
+            id, created_at, consumer_id, producer_id
+          FROM
+            connections
+          WHERE
+            consumer_id = :consumer_id
+          ORDER BY
+            id DESC
+          LIMIT :limit
+          OFFSET :offset
+        SQL
+
+        binds = {
+          consumer_id: self.class.dehydrate(consumer),
+          limit: options.fetch(:limit, 30),
+          offset: options.fetch(:offset, 0),
+        }
+
+        @db[statement, binds].to_a.map { |row|
+          Connection.new({
+            id: row[:id],
+            created_at: row[:created_at],
+            consumer: self.class.hydrate(row[:consumer_id]),
+            producer: self.class.hydrate(row[:producer_id]),
+          })
+        }
       end
 
       def timeline(consumer, options = {})

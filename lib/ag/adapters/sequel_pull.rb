@@ -48,50 +48,89 @@ module Ag
       end
 
       def connected?(consumer, producer)
-        !@db[:connections].select(:id).where({
+        statement = <<-SQL
+          SELECT
+            1
+          FROM
+            connections
+          WHERE
+            consumer_id = :consumer_id AND
+            producer_id = :producer_id
+          LIMIT 1
+        SQL
+
+        binds = {
           consumer_id: consumer.id,
           consumer_type: consumer.type,
           producer_id: producer.id,
           producer_type: producer.type,
-        }).first.nil?
+        }
+
+        !@db[statement, binds].first.nil?
       end
 
       def consumers(producer, options = {})
-        @db[:connections].
-          where({
-            producer_id: producer.id,
-            producer_type: producer.type,
-          }).
-          limit(options.fetch(:limit, 30)).
-          offset(options.fetch(:offset, 0)).
-          order(Sequel.desc(:id)).
-          map { |row|
-            Connection.new({
-              id: row[:id],
-              created_at: row[:created_at],
-              consumer: Object.new(row[:consumer_type], row[:consumer_id]),
-              producer: Object.new(row[:producer_type], row[:producer_id]),
-            })
-          }
+        statement = <<-SQL
+          SELECT
+            id, created_at, consumer_id, consumer_type, producer_id, producer_type
+          FROM
+            connections
+          WHERE
+            producer_id = :producer_id AND
+            producer_type = :producer_type
+          ORDER BY
+            id DESC
+          LIMIT :limit
+          OFFSET :offset
+        SQL
+
+        binds = {
+          producer_id: producer.id,
+          producer_type: producer.type,
+          limit: options.fetch(:limit, 30),
+          offset: options.fetch(:offset, 0),
+        }
+
+        @db[statement, binds].to_a.map { |row|
+          Connection.new({
+            id: row[:id],
+            created_at: row[:created_at],
+            consumer: Object.new(row[:consumer_type], row[:consumer_id]),
+            producer: Object.new(row[:producer_type], row[:producer_id]),
+          })
+        }
       end
 
       def producers(consumer, options = {})
-        @db[:connections].
-          where({
-            consumer_id: consumer.id,
-            consumer_type: consumer.type,
-          }).
-          limit(options.fetch(:limit, 30)).
-          offset(options.fetch(:offset, 0)).
-          order(Sequel.desc(:id)).
-          map { |row|
-            Connection.new({
-              id: row[:id],
-              created_at: row[:created_at],
-              consumer: Object.new(row[:consumer_type], row[:consumer_id]),
-              producer: Object.new(row[:producer_type], row[:producer_id]),
-            })
-          }
+        statement = <<-SQL
+          SELECT
+            id, created_at, consumer_id, consumer_type, producer_id, producer_type
+          FROM
+            connections
+          WHERE
+            consumer_id = :consumer_id AND
+            consumer_type = :consumer_type
+          ORDER BY
+            id DESC
+          LIMIT :limit
+          OFFSET :offset
+        SQL
+
+        binds = {
+          consumer_id: consumer.id,
+          consumer_type: consumer.type,
+          limit: options.fetch(:limit, 30),
+          offset: options.fetch(:offset, 0),
+        }
+
+        @db[statement, binds].to_a.map { |row|
+          Connection.new({
+            id: row[:id],
+            created_at: row[:created_at],
+            consumer: Object.new(row[:consumer_type], row[:consumer_id]),
+            producer: Object.new(row[:producer_type], row[:producer_id]),
+          })
+        }
       end
 
       def timeline(consumer, options = {})
