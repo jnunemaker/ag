@@ -1,5 +1,7 @@
 # Ag
 
+WORK IN PROGRESS...
+
 Experiments in describing feeds/timelines of events in code based on adapters so things can work at most levels of throughput.
 
 ## Installation
