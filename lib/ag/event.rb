@@ -4,6 +4,7 @@ module Ag
   class Event
     extend Forwardable
 
+    attr_reader :id
     attr_reader :producer
     attr_reader :object
     attr_reader :verb
@@ -16,6 +17,7 @@ module Ag
     def_delegator :@object, :type, :object_type
 
     def initialize(attrs = {})
+      @id = attrs[:id]
       @producer = attrs.fetch(:producer)
       @object = attrs.fetch(:object)
       @verb = attrs.fetch(:verb)

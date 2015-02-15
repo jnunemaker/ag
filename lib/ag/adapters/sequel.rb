@@ -25,6 +25,26 @@ module Ag
         })
       end
 
+      def produce(event)
+        created_at = Time.now.utc
+        id = @db[:events].insert({
+          producer_type: event.producer.type,
+          producer_id: event.producer.id,
+          object_type: event.object.type,
+          object_id: event.object.id,
+          verb: event.verb,
+          created_at: created_at,
+        })
+
+        Ag::Event.new({
+          id: id,
+          created_at: created_at,
+          producer: event.producer,
+          object: event.object,
+          verb: event.verb,
+        })
+      end
+
       def connected?(consumer, producer)
         !@db[:connections].select(:id).where({
           consumer_id: consumer.id,
@@ -60,16 +80,6 @@ module Ag
             producer: Object.new(row[:producer_type], row[:producer_id]),
           })
         }
-      end
-
-      def produce(event)
-        @db[:events].insert({
-          producer_type: event.producer.type,
-          producer_id: event.producer.id,
-          object_type: event.object.type,
-          object_id: event.object.id,
-          created_at: Time.now.utc,
-        })
       end
 
       def timeline(consumer)

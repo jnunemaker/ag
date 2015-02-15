@@ -1,3 +1,5 @@
+require "securerandom"
+
 module Ag
   module Adapters
     class Memory
@@ -13,6 +15,18 @@ module Ag
           consumer: consumer,
           producer: producer,
         })
+      end
+
+      def produce(event)
+        result = Ag::Event.new({
+          id: SecureRandom.uuid,
+          producer: event.producer,
+          object: event.object,
+          verb: event.verb,
+        })
+        @source[:events] ||= []
+        @source[:events] << result
+        result
       end
 
       def connected?(consumer, producer)
@@ -32,11 +46,6 @@ module Ag
         @source[:connections].select { |connection|
           connection.consumer == consumer
         }.reverse
-      end
-
-      def produce(event)
-        @source[:events] ||= []
-        @source[:events] << event
       end
 
       def timeline(consumer)

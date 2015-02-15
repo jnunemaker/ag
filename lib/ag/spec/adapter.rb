@@ -63,9 +63,10 @@ module Ag
           verb: "follow",
         })
 
-        adapter.produce(event)
+        result = adapter.produce(event)
 
         event = events.first
+        assert_equal event.id, result.id
         assert_equal producer.id, event.producer_id
         assert_equal producer.type, event.producer_type
         assert_equal object.id, event.object_id
