@@ -54,7 +54,7 @@ module Ag
           producers.include?(event.producer)
         }.sort_by { |event|
           -event.created_at.to_f
-        }[0, options.fetch(:limit, 30)]
+        }[options.fetch(:offset, 0), options.fetch(:limit, 30)]
       end
     end
   end

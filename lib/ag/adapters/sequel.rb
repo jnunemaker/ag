@@ -95,11 +95,13 @@ module Ag
           ORDER BY
             e.created_at DESC
           LIMIT :limit
+          OFFSET :offset
         SQL
         binds = {
           consumer_id: consumer.id,
           consumer_type: consumer.type,
-          limit: options.fetch(:limit, 30)
+          limit: options.fetch(:limit, 30),
+          offset: options.fetch(:offset, 0),
         }
         @db[statement, binds].to_a.map { |row|
           Ag::Event.new({
