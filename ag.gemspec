@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Ag::VERSION
   spec.authors       = ["John Nunemaker"]
   spec.email         = ["nunemaker@gmail.com"]
-  spec.summary       = %q{Timelines.}
-  spec.description   = %q{Timelines.}
+  spec.summary       = %q{Producers, consumers, connections and timelines.}
+  spec.description   = %q{Producers, consumers, connections and timelines.}
   spec.homepage      = ""
   spec.license       = "MIT"
 
