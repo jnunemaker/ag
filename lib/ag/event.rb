@@ -13,8 +13,9 @@ module Ag
     def_delegator :@producer, :id, :producer_id
     def_delegator :@producer, :type, :producer_type
 
-    def_delegator :@object, :id, :object_id
-    def_delegator :@object, :type, :object_type
+    # overriding object_id in ruby may cause bad things
+    def_delegator :@object, :id, :event_object_id
+    def_delegator :@object, :type, :event_object_type
 
     def initialize(attrs = {})
       @id = attrs[:id]

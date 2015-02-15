@@ -69,8 +69,8 @@ module Ag
         assert_equal event.id, result.id
         assert_equal producer.id, event.producer_id
         assert_equal producer.type, event.producer_type
-        assert_equal object.id, event.object_id
-        assert_equal object.type, event.object_type
+        assert_equal object.id, event.event_object_id
+        assert_equal object.type, event.event_object_type
         assert_in_delta Time.now.utc, event.created_at, 1
       end
 
