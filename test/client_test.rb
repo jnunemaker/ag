@@ -74,7 +74,6 @@ class ClientTest < Ag::Test
     @event ||= Ag::Event.new({
       producer: producer,
       object: object,
-      actor: actor,
       verb: verb,
     })
   end
@@ -93,9 +92,5 @@ class ClientTest < Ag::Test
 
   def object
     @object ||= Ag::Object.new("User", "2")
-  end
-
-  def actor
-    @actor ||= Ag::Actor.new("User", "1")
   end
 end

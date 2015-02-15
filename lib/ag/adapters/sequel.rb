@@ -50,8 +50,6 @@ module Ag
           producer_id: event.producer.id,
           object_type: event.object.type,
           object_id: event.object.id,
-          actor_type: event.actor.type,
-          actor_id: event.actor.id,
           created_at: Time.now.utc,
         })
       end

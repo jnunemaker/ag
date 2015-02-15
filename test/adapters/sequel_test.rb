@@ -22,8 +22,6 @@ class AdaptersSequelTest < Ag::Test
       String :producer_type
       String :object_id
       String :object_type
-      String :actor_id
-      String :actor_type
       String :verb
       Time :created_at
     end
