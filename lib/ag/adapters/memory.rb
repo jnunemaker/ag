@@ -5,10 +5,11 @@ module Ag
     class Memory
       def initialize(source = {})
         @source = source
+        @source[:connections] ||= []
+        @source[:events] ||= []
       end
 
       def connect(consumer, producer)
-        @source[:connections] ||= []
         @source[:connections] << Connection.new({
           id: SecureRandom.uuid,
           created_at: Time.now.utc,
@@ -24,7 +25,6 @@ module Ag
           object: event.object,
           verb: event.verb,
         })
-        @source[:events] ||= []
         @source[:events] << result
         result
       end
