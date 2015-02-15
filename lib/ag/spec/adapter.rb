@@ -8,10 +8,10 @@ module Ag
         adapter.connect(consumer, producer)
 
         connection = connections.first
-        assert_equal consumer.id, connection.consumer_id
-        assert_equal consumer.type, connection.consumer_type
-        assert_equal producer.id, connection.producer_id
-        assert_equal producer.type, connection.producer_type
+        assert_equal consumer.id, connection.consumer.id
+        assert_equal consumer.type, connection.consumer.type
+        assert_equal producer.id, connection.producer.id
+        assert_equal producer.type, connection.producer.type
         assert_in_delta Time.now.utc, connection.created_at, 1
       end
 
@@ -28,10 +28,10 @@ module Ag
 
         event = events.first
         assert_equal event.id, result.id
-        assert_equal producer.id, event.producer_id
-        assert_equal producer.type, event.producer_type
-        assert_equal object.id, event.event_object_id
-        assert_equal object.type, event.event_object_type
+        assert_equal producer.id, event.producer.id
+        assert_equal producer.type, event.producer.type
+        assert_equal object.id, event.object.id
+        assert_equal object.type, event.object.type
         assert_in_delta Time.now.utc, event.created_at, 1
       end
 
