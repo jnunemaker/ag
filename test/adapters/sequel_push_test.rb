@@ -44,8 +44,8 @@ class AdaptersSequelPushTest < Ag::Test
 
   private
 
-  def connections
-    @db[:connections].map { |row|
+  def producers(consumer)
+    @db[:connections].where(consumer_id: consumer.id, consumer_type: consumer.type).map { |row|
       Ag::Connection.new({
         id: row[:id],
         created_at: row[:created_at],

@@ -16,8 +16,10 @@ class AdaptersMemoryTest < Ag::Test
 
   private
 
-  def connections
-    @source[:connections]
+  def producers(consumer)
+    @source[:connections].select { |connection|
+      connection.consumer == consumer
+    }
   end
 
   def events

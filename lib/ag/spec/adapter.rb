@@ -7,7 +7,7 @@ module Ag
 
         adapter.connect(consumer, producer)
 
-        connection = connections.first
+        connection = producers(consumer).first
         assert_equal consumer.id, connection.consumer.id
         assert_equal consumer.type, connection.consumer.type
         assert_equal producer.id, connection.producer.id
