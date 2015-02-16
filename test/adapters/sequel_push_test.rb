@@ -1,0 +1,121 @@
+require_relative "../helper"
+require "ag/adapters/sequel_push"
+require "ag/spec/adapter"
+
+class AdaptersSequelPushTest < Ag::Test
+  def setup
+    Sequel.default_timezone = :utc
+    @db = Sequel.sqlite
+
+    @db.create_table :connections do
+      primary_key :id
+      String :consumer_id
+      String :consumer_type
+      String :producer_id
+      String :producer_type
+      Time :created_at
+      index [:consumer_id, :consumer_type, :producer_id, :producer_type], unique: true
+    end
+
+    @db.create_table :events do
+      primary_key :id
+      String :producer_id
+      String :producer_type
+      String :object_id
+      String :object_type
+      String :verb
+      Time :created_at
+    end
+
+    @db.create_table :timelines do
+      primary_key :id
+      String :consumer_id
+      String :consumer_type
+      String :event_id
+      Time :created_at
+    end
+  end
+
+  def adapter
+    @adapter ||= Ag::Adapters::SequelPush.new(@db)
+  end
+
+  include Ag::Spec::Adapter
+
+  private
+
+  def connections
+    @db[:connections].map { |row|
+      Ag::Connection.new({
+        id: row[:id],
+        created_at: row[:created_at],
+        consumer: Ag::Object.new(row[:consumer_type], row[:consumer_id]),
+        producer: Ag::Object.new(row[:producer_type], row[:producer_id]),
+      })
+    }
+  end
+
+  def events
+    @db[:events].map { |row|
+      Ag::Event.new({
+        id: row[:id],
+        verb: row[:verb],
+        created_at: row[:created_at],
+        producer: Ag::Object.new(row[:producer_type], row[:producer_id]),
+        object: Ag::Object.new(row[:object_type], row[:object_id]),
+      })
+    }
+  end
+
+  def connect(consumer, producer)
+    @db[:connections].insert({
+      consumer_id: consumer.id,
+      consumer_type: consumer.type,
+      producer_id: producer.id,
+      producer_type: producer.type,
+    })
+  end
+
+  def produce(event)
+    created_at = Time.now.utc
+    id = @db[:events].insert({
+      producer_type: event.producer.type,
+      producer_id: event.producer.id,
+      object_type: event.object.type,
+      object_id: event.object.id,
+      created_at: created_at,
+    })
+
+    each_consumer(event.producer) do |consumer|
+      @db[:timelines].insert({
+        consumer_id: consumer.id,
+        consumer_type: consumer.type,
+        event_id: id,
+        created_at: created_at,
+      })
+    end
+  end
+
+  def each_consumer(producer)
+    statement = <<-SQL
+      SELECT
+        consumer_id, consumer_type
+      FROM
+        connections
+      WHERE
+        producer_id = :producer_id AND
+        producer_type = :producer_type
+      ORDER BY
+        id ASC
+    SQL
+
+    binds = {
+      producer_id: producer.id,
+      producer_type: producer.type,
+    }
+
+    @db[statement, binds].each do |row|
+      yield Ag::Object.new(row[:consumer_type], row[:consumer_id])
+    end
+  end
+end
