@@ -8,6 +8,7 @@ module Ag
         adapter.connect(consumer, producer)
 
         connection = producers(consumer).first
+        refute_nil connection
         assert_equal consumer.id, connection.consumer.id
         assert_equal consumer.type, connection.consumer.type
         assert_equal producer.id, connection.producer.id
@@ -60,7 +61,7 @@ module Ag
 
       def test_consumers_limit
         producer = Ag::Object.new("User", "99")
-        consumers = (1..10).to_a.map { |n|
+        consumers = (0..9).to_a.map { |n|
           Ag::Object.new("User", n.to_s).tap { |consumer|
             connect consumer, producer
           }
@@ -72,7 +73,7 @@ module Ag
 
       def test_consumers_offset
         producer = Ag::Object.new("User", "99")
-        consumers = (1..10).to_a.map { |n|
+        consumers = (0..9).to_a.map { |n|
           Ag::Object.new("User", n.to_s).tap { |consumer|
             connect consumer, producer
           }
@@ -99,7 +100,7 @@ module Ag
 
       def test_producers_limit
         consumer = Ag::Object.new("User", "99")
-        producers = (1..10).to_a.map { |n|
+        producers = (0..9).to_a.map { |n|
           Ag::Object.new("User", n.to_s).tap { |producer|
             connect consumer, producer
           }
@@ -111,7 +112,7 @@ module Ag
 
       def test_producers_offset
         consumer = Ag::Object.new("User", "99")
-        producers = (1..10).to_a.map { |n|
+        producers = (0..9).to_a.map { |n|
           Ag::Object.new("User", n.to_s).tap { |producer|
             connect consumer, producer
           }
@@ -136,7 +137,7 @@ module Ag
         steve = Ag::Object.new("User", "2")
         connect john, steve
 
-        presentations = (1..10).to_a.map { |n|
+        presentations = (0..9).to_a.map { |n|
           Ag::Object.new("Presentation", n.to_s)
         }
 
@@ -158,7 +159,7 @@ module Ag
         steve = Ag::Object.new("User", "2")
         connect john, steve
 
-        presentations = (1..10).to_a.map { |n|
+        presentations = (0..9).to_a.map { |n|
           Ag::Object.new("Presentation", n.to_s)
         }
 
