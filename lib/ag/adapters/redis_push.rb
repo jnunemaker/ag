@@ -27,8 +27,10 @@ module Ag
         }
         json_value = JSON.dump(value)
         created_at_float = event.created_at.to_f
-        consumers = consumers(event.producer)
 
+        # FIXME: This is terrible for large number of consumers. Would be better
+        # to do in consumer batches.
+        consumers = consumers(event.producer)
         @redis.pipelined do |redis|
           redis.set("events:#{value[:id]}", json_value)
           redis.zadd("events", created_at_float, value[:id])
@@ -85,6 +87,8 @@ module Ag
         offset = options.fetch(:offset, 0)
         start = offset
         finish = start + limit - 1
+
+        # get all the event ids
         rows = @redis.zrevrange(consumer.key("timeline"), start, finish, with_scores: true)
 
         # mget all events
