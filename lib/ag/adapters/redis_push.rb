@@ -92,6 +92,8 @@ module Ag
         rows = @redis.zrevrange(consumer.key("timeline"), start, finish, with_scores: true)
 
         # mget all events
+        # FIXME: this is most likely terrible for really large number
+        # of events being fetched; should probably mget in batches
         event_keys = rows.map { |row| "events:#{row[0]}" }
         redis_events = @redis.mget(event_keys).inject({}) { |hash, json|
           event = JSON.load(json)
