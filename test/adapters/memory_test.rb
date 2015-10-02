@@ -16,7 +16,7 @@ class AdaptersMemoryTest < Ag::Test
 
   private
 
-  def producers(consumer)
+  def connections(consumer)
     @source[:connections].select { |connection|
       connection.consumer == consumer
     }

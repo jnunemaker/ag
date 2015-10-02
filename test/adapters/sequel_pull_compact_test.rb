@@ -32,7 +32,7 @@ class AdaptersSequelPullCompactTest < Ag::Test
 
   private
 
-  def producers(consumer)
+  def connections(consumer)
     @db[:connections].where(consumer_id: Ag::Adapters::SequelPullCompact.dehydrate(consumer)).map { |row|
       Ag::Connection.new({
         id: row[:id],

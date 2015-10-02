@@ -7,7 +7,7 @@ module Ag
 
         adapter.connect(consumer, producer)
 
-        connection = producers(consumer).first
+        connection = connections(consumer).first
         refute_nil connection
         assert_equal consumer.id, connection.consumer.id
         assert_equal consumer.type, connection.consumer.type
@@ -69,6 +69,10 @@ module Ag
         assert_equal 5, adapter.consumers(producer, limit: 5).size
         assert_equal consumers[5..9].reverse,
           adapter.consumers(producer, limit: 5).map(&:consumer)
+
+        assert_equal 1, adapter.consumers(producer, limit: 1).size
+        assert_equal [consumers[9]],
+          adapter.consumers(producer, limit: 1).map(&:consumer)
       end
 
       def test_consumers_offset
@@ -108,6 +112,10 @@ module Ag
         assert_equal 5, adapter.producers(consumer, limit: 5).size
         assert_equal producers[5..9].reverse,
           adapter.producers(consumer, limit: 5).map(&:producer)
+
+        assert_equal 1, adapter.producers(consumer, limit: 1).size
+        assert_equal [producers[9]],
+          adapter.producers(consumer, limit: 1).map(&:producer)
       end
 
       def test_producers_offset
