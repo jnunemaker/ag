@@ -33,48 +33,4 @@ class AdaptersSequelPullTest < Ag::Test
   end
 
   include Ag::Spec::Adapter
-
-  private
-
-  def connections(consumer)
-    @db[:connections].where(consumer_id: consumer.id, consumer_type: consumer.type).map { |row|
-      Ag::Connection.new({
-        id: row[:id],
-        created_at: row[:created_at],
-        consumer: Ag::Object.new(row[:consumer_type], row[:consumer_id]),
-        producer: Ag::Object.new(row[:producer_type], row[:producer_id]),
-      })
-    }
-  end
-
-  def events
-    @db[:events].map { |row|
-      Ag::Event.new({
-        id: row[:id],
-        verb: row[:verb],
-        created_at: row[:created_at],
-        producer: Ag::Object.new(row[:producer_type], row[:producer_id]),
-        object: Ag::Object.new(row[:object_type], row[:object_id]),
-      })
-    }
-  end
-
-  def connect(consumer, producer)
-    @db[:connections].insert({
-      consumer_id: consumer.id,
-      consumer_type: consumer.type,
-      producer_id: producer.id,
-      producer_type: producer.type,
-    })
-  end
-
-  def produce(event)
-    @db[:events].insert({
-      producer_type: event.producer.type,
-      producer_id: event.producer.id,
-      object_type: event.object.type,
-      object_id: event.object.id,
-      created_at: Time.now.utc,
-    })
-  end
 end

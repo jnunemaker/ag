@@ -7,7 +7,10 @@ module Ag
 
         adapter.connect(consumer, producer)
 
-        connection = connections(consumer).first
+        assert_equal consumer, adapter.consumers(producer).map(&:consumer).first
+        assert_equal producer, adapter.producers(consumer).map(&:producer).first
+
+        connection = adapter.consumers(producer).first
         refute_nil connection
         assert_equal consumer.id, connection.consumer.id
         assert_equal consumer.type, connection.consumer.type
@@ -18,7 +21,10 @@ module Ag
 
       def test_produce
         producer = Ag::Object.new("User", "1")
-        object = Ag::Object.new("User", "2")
+        consumer = Ag::Object.new("User", "2")
+        adapter.connect(consumer, producer)
+
+        object = Ag::Object.new("User", "3")
         event = Ag::Event.new({
           producer: producer,
           object: object,
@@ -27,7 +33,7 @@ module Ag
 
         result = adapter.produce(event)
 
-        event = events.first
+        event = adapter.timeline(consumer).first
         assert_equal event.id, result.id
         assert_equal producer.id, event.producer.id
         assert_equal producer.type, event.producer.type
@@ -39,7 +45,7 @@ module Ag
       def test_connected
         consumer = Ag::Object.new("User", "1")
         producer = Ag::Object.new("User", "2")
-        connect(consumer, producer)
+        adapter.connect(consumer, producer)
 
         assert_equal true, adapter.connected?(consumer, producer)
         assert_equal false, adapter.connected?(producer, consumer)
@@ -50,8 +56,8 @@ module Ag
         consumer2 = Ag::Object.new("User", "2")
         consumer3 = Ag::Object.new("User", "3")
         producer = Ag::Object.new("User", "4")
-        connect(consumer1, producer)
-        connect(consumer2, producer)
+        adapter.connect(consumer1, producer)
+        adapter.connect(consumer2, producer)
 
         consumers = adapter.consumers(producer)
         assert_equal 2, consumers.size
@@ -63,7 +69,7 @@ module Ag
         producer = Ag::Object.new("User", "99")
         consumers = (0..9).to_a.map { |n|
           Ag::Object.new("User", n.to_s).tap { |consumer|
-            connect consumer, producer
+            adapter.connect consumer, producer
           }
         }
         assert_equal 5, adapter.consumers(producer, limit: 5).size
@@ -79,7 +85,7 @@ module Ag
         producer = Ag::Object.new("User", "99")
         consumers = (0..9).to_a.map { |n|
           Ag::Object.new("User", n.to_s).tap { |consumer|
-            connect consumer, producer
+            adapter.connect consumer, producer
           }
         }
         assert_equal consumers[0..4].reverse,
@@ -92,9 +98,9 @@ module Ag
         producer1 = Ag::Object.new("User", "3")
         producer2 = Ag::Object.new("User", "4")
         producer3 = Ag::Object.new("User", "5")
-        connect(consumer1, producer1)
-        connect(consumer1, producer2)
-        connect(consumer2, producer3)
+        adapter.connect(consumer1, producer1)
+        adapter.connect(consumer1, producer2)
+        adapter.connect(consumer2, producer3)
 
         producers = adapter.producers(consumer1)
         assert_equal 2, producers.size
@@ -106,7 +112,7 @@ module Ag
         consumer = Ag::Object.new("User", "99")
         producers = (0..9).to_a.map { |n|
           Ag::Object.new("User", n.to_s).tap { |producer|
-            connect consumer, producer
+            adapter.connect consumer, producer
           }
         }
         assert_equal 5, adapter.producers(consumer, limit: 5).size
@@ -122,7 +128,7 @@ module Ag
         consumer = Ag::Object.new("User", "99")
         producers = (0..9).to_a.map { |n|
           Ag::Object.new("User", n.to_s).tap { |producer|
-            connect consumer, producer
+            adapter.connect consumer, producer
           }
         }
         assert_equal producers[0..4].reverse,
@@ -133,8 +139,8 @@ module Ag
         john = Ag::Object.new("User", "1")
         steve = Ag::Object.new("User", "2")
         presentation = Ag::Object.new("Presentation", "1")
-        connect john, steve
-        produce Ag::Event.new(producer: steve, object: presentation, verb: "publish")
+        adapter.connect john, steve
+        adapter.produce Ag::Event.new(producer: steve, object: presentation, verb: "publish")
 
         events = adapter.timeline(john)
         assert_equal 1, events.size
@@ -143,14 +149,14 @@ module Ag
       def test_timeline_limit
         john = Ag::Object.new("User", "1")
         steve = Ag::Object.new("User", "2")
-        connect john, steve
+        adapter.connect john, steve
 
         presentations = (0..9).to_a.map { |n|
           Ag::Object.new("Presentation", n.to_s)
         }
 
         presentations.each do |presentation|
-          produce Ag::Event.new({
+          adapter.produce Ag::Event.new({
             producer: steve,
             object: presentation,
             verb: "publish",
@@ -165,14 +171,14 @@ module Ag
       def test_timeline_offset
         john = Ag::Object.new("User", "1")
         steve = Ag::Object.new("User", "2")
-        connect john, steve
+        adapter.connect john, steve
 
         presentations = (0..9).to_a.map { |n|
           Ag::Object.new("Presentation", n.to_s)
         }
 
         presentations.each do |presentation|
-          produce Ag::Event.new({
+          adapter.produce Ag::Event.new({
             producer: steve,
             object: presentation,
             verb: "publish",

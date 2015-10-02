@@ -13,31 +13,4 @@ class AdaptersMemoryTest < Ag::Test
   end
 
   include Ag::Spec::Adapter
-
-  private
-
-  def connections(consumer)
-    @source[:connections].select { |connection|
-      connection.consumer == consumer
-    }
-  end
-
-  def events
-    @source[:events]
-  end
-
-  def connect(consumer, producer)
-    @source[:connections] ||= []
-    @source[:connections] << Ag::Connection.new({
-      id: SecureRandom.uuid,
-      created_at: Time.now.utc,
-      consumer: consumer,
-      producer: producer,
-    })
-  end
-
-  def produce(event)
-    @source[:events] ||= []
-    @source[:events] << event
-  end
 end
