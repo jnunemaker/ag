@@ -32,8 +32,8 @@ module Ag
         @redis.pipelined do |redis|
           redis.set("events:#{value[:id]}", json_value)
           redis.zadd("events", created_at_float, value[:id])
-          consumers.each do |consumer|
-            redis.zadd(consumer.key("timeline"), created_at_float, value[:id])
+          consumers.each do |connection|
+            redis.zadd(connection.consumer.key("timeline"), created_at_float, value[:id])
           end
         end
 
