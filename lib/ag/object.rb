@@ -1,6 +1,6 @@
 module Ag
   class Object
-    Separator = ":".freeze
+    Separator = ";".freeze
 
     def self.from_key(key, separator = Separator)
       new(*key.split(Separator))
