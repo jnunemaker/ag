@@ -70,7 +70,7 @@ module Ag
         connections = Connection.
           select(:id, :created_at, :consumer_id, :consumer_type, :producer_id, :producer_type).
           where(producer_id: producer.id, producer_type: producer.type).
-          order("id DESC").
+          order("created_at DESC").
           limit(options.fetch(:limit, 30)).
           offset(options.fetch(:offset, 0))
 
@@ -88,7 +88,7 @@ module Ag
         connections = Connection.
           select(:id, :created_at, :consumer_id, :consumer_type, :producer_id, :producer_type).
           where(consumer_id: consumer.id, consumer_type: consumer.type).
-          order("id DESC").
+          order("created_at DESC").
           limit(options.fetch(:limit, 30)).
           offset(options.fetch(:offset, 0))
 
